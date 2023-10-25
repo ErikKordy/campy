@@ -7,6 +7,7 @@ const mongoose = require('mongoose')
 const path = require('path')
 const ejsMate = require('ejs-mate')
 const session = require('express-session')
+const MongoStore = require('connect-mongo')
 const flash = require('connect-flash')
 const ExpressError = require('./utils/expressError')
 const methodOverride = require('method-override')
@@ -19,12 +20,15 @@ const helmet = require('helmet')
 const userRoutes = require('./routes/users')
 const campgroundRoutes = require('./routes/campgrounds')
 const reviewRoutes = require('./routes/reviews')
+// const dbUrl = process.env.DB_URL
 
+
+const dbUrl = 'mongodb://localhost:27017/campy'
 
 main().catch(err => console.log(err));
-
+// 'mongodb://localhost:27017/campy'
 async function main() {
-    await mongoose.connect('mongodb://localhost:27017/campy')
+    mongoose.connect(dbUrl)
     console.log("Database connected")
 }
 
@@ -39,9 +43,27 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize())
 
+
+const sessionSec = process.env.SESSION_SECRET
+const storeSec = process.env.STORE_SECRET
+
+
+const store = MongoStore.create({
+    mongoUrl: dbUrl,
+    touchAfter: 24 * 60 * 60,
+    crypto: {
+        secret: storeSec
+    }
+});
+
+store.on("error", function(e) {
+    console.log("SESSION STORE ERROR", e)
+})
+
 const sessionConfig = {
+    store,
     name: 'session',
-    secret: 'tempsecret',
+    secret: sessionSec,
     resave: false,
     saveUninitialized: true,
     cookie: {

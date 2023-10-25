@@ -19,6 +19,7 @@ const seedDB = async () => {
     for (let i = 0; i < 300; i++) {
         const random1000 = Math.floor(Math.random() * 1000);
         const price = Math.floor(Math.random() * 20) + 10;
+        const createdAt = new Date()
         const camp = new Campground({
             author: '6524584b27e8db836538acf6',
             location: `${cities[random1000].city}, ${cities[random1000].state}`,
@@ -41,7 +42,8 @@ const seedDB = async () => {
                     url: 'https://res.cloudinary.com/dvkakrwbz/image/upload/v1697749488/Campy/bedl80memxiaqwqioili.jpg',
                     filename: 'Campy/bedl80memxiaqwqioili',
                 }
-            ]
+            ],
+            createdAt
         })
         await camp.save();
     }

@@ -17,11 +17,16 @@ module.exports.createCampground = async (req, res, next) => {
     const geoData = await geocoder.forwardGeocode({
         query: req.body.campground.location,
         limit: 1
-    }).send()
+    }).send();
     const campground = new Campground(req.body.campground);
-    campground.geometry = geoData.body.features[0].geometry
-    campground.images = req.files.map(file => ({ url: file.path, filename: file.filename }))
+    campground.geometry = geoData.body.features[0].geometry;
+    campground.images = req.files.map(file => ({ url: file.path, filename: file.filename }));
     campground.author = req.user._id;
+
+    // Capture the current date and time
+    campground.createdAt = new Date();
+    console.log('createdAt:', campground.createdAt);
+
     await campground.save();
     console.log(campground);
     req.flash('success', 'Successfully made a new campground!');

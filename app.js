@@ -28,7 +28,10 @@ const dbUrl = process.env.DB_URL || 'mongodb://localhost:27017/campy'
 main().catch(err => console.log(err));
 // 'mongodb://localhost:27017/campy'
 async function main() {
-    mongoose.connect(dbUrl)
+    mongoose.connect(dbUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
     console.log("Database connected")
 }
 

@@ -44,15 +44,15 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use(mongoSanitize())
 
 
-const sessionSec = process.env.SESSION_SECRET || 'thisissecret'
-const storeSec = process.env.STORE_SECRET || 'thisissecret'
+const secret = process.env.SECRET || 'thisissecret'
+
 
 
 const store = MongoStore.create({
     mongoUrl: dbUrl,
     touchAfter: 24 * 60 * 60,
     crypto: {
-        storeSec
+        secret
     }
 });
 
@@ -63,7 +63,7 @@ store.on("error", function(e) {
 const sessionConfig = {
     store,
     name: 'session',
-    sessionSec,
+    secret,
     resave: false,
     saveUninitialized: true,
     cookie: {
